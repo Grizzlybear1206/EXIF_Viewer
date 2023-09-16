@@ -1,5 +1,5 @@
-from PIL import Image # Extract EXIF data from loaded image
-from PIL import ExifTags # Convert EXIF data to human readable words
+import PIL
+from PIL import Image, ExifTags # Extract EXIF data from loaded image | Convert EXIF data to human readable words
 from tkinter import filedialog # tkinter's built in file explorer
 import pyperclip # used to copy EXIF Data to clipboard
 
@@ -17,15 +17,23 @@ def ExtractExif():
 
     print(SelectedImage + "\n")
 
-    LoadedImage = Image.open(SelectedImage)
+    try:
+        LoadedImage = Image.open(SelectedImage)
+    except PIL.UnidentifiedImageError:
+        print("Image unable to be loaded")
+        return
 
     EXIFData = LoadedImage.getexif()
 
     EXIFString = ""
 
-    for k, v in EXIFData.items():
-        print(Tags[k], v)
-        EXIFString += f'{Tags[k]}: {v}'
+    if len(EXIFData) == 0:
+        print("No EXIF data found")
+
+    else:
+        for k, v in EXIFData.items():
+            print(Tags[k], v)
+            EXIFString += f'{Tags[k]}: {v}'
 
     command = input("\nType \"c\" to copy EXIF data to clipboard\nType \"r\" to select another file\nType \"cr\" to do both\nPress ENTER to exit EXIF Viewer\n>: ")
 
